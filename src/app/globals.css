@@ -1,0 +1,62 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 262 84% 58%; /* Vibrant Purple */
+    --primary-foreground: 0 0% 98%;
+    --secondary: 180 100% 50%; /* Cool Cyan */
+    --secondary-foreground: 240 10% 3.9%;
+    --muted: 240 4% 36%;
+    --muted-foreground: 0 0% 80%;
+    --accent: 240 4% 46%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 4% 26%;
+    --input: 240 4% 26%;
+    --ring: 262 84% 58%;
+    --radius: 0.5rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-transparent text-foreground;
+    font-family: var(--font-body);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-headline);
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-black/50 backdrop-blur-xl border border-primary/20 shadow-2xl;
+  }
+
+  .glow-on-hover {
+    @apply transition-all duration-300;
+  }
+
+  .glow-on-hover:hover {
+    @apply shadow-[0_0_20px_theme(colors.primary/0.5)];
+  }
+  
+  .scale-transform {
+    @apply transition-transform duration-300;
+  }
+
+  .scale-transform:hover {
+    @apply scale-105;
+  }
+}

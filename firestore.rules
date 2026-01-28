@@ -1,0 +1,126 @@
+/**
+ * @file Firestore Security Rules for AURA+ application.
+ * @description This ruleset enforces a strict user-ownership model for user-generated data and allows public read access to the topics collection.
+ *
+ * Data Structure:
+ * - `/topics/{topicId}`: Publicly readable collection of available topics.
+ * - `/users/{userId}/speechAnalyses/{speechAnalysisId}`: Collection of speech analysis data owned by a specific user.
+ * - `/users/{userId}/questions/{questionId}`: Collection of AI-generated questions for a specific user.
+ * - `/users/{userId}/answers/{answerId}`: Collection of user answers to questions, owned by a specific user.
+ * - `/users/{userId}/reports/{reportId}`: Collection of AI-generated reports owned by a specific user.
+ *
+ * Key Security Decisions:
+ * - User data is strictly segregated under `/users/{userId}` to enforce ownership.
+ * - Listing of user documents is allowed only to the owner.
+ * - Topics are publicly readable.
+ *
+ * Authorization:
+ * - Data ownership is determined by the path: `/users/{userId}/...`. The authenticated user's UID must match the `userId` path segment.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Allows public read access to topics and restricts writes.
+     * @path /topics/{topicId}
+     * @allow (get, list) - Any user can read the topics.
+     * @allow (create) - No one can create topics (this should be done via admin SDK).
+     * @deny (create) - prevents a user from creating a new topic.
+     * @deny (update) - prevents a user from updating a topic.
+     * @deny (delete) - prevents a user from deleting a topic.
+     * @principle Allows public read access to topics and restricts writes to authorized users.
+     */
+    match /topics/{topicId} {
+      allow get, list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    /**
+     * @description Enforces user-ownership for speech analysis documents.
+     * @path /users/{userId}/speechAnalyses/{speechAnalysisId}
+     * @allow (create) - Authenticated user can create a speech analysis document under their own user ID.
+     * @allow (get, list) - Authenticated user can read their own speech analysis documents.
+     * @allow (update, delete) - Authenticated user can update or delete their own speech analysis documents.
+     * @deny (create) - Prevents creating a speech analysis document under a different user ID.
+     * @deny (get, list) - Prevents reading speech analysis documents from other users.
+     * @deny (update, delete) - Prevents modifying or deleting speech analysis documents from other users.
+     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
+     */
+    match /users/{userId}/speechAnalyses/{speechAnalysisId} {
+      allow create: if isSignedIn() && isOwner(userId);
+      allow get, list: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isExistingOwner(userId);
+      allow delete: if isSignedIn() && isExistingOwner(userId);
+    }
+
+    /**
+     * @description Enforces user-ownership for question documents.
+     * @path /users/{userId}/questions/{questionId}
+     * @allow (create) - Authenticated user can create a question document under their own user ID.
+     * @allow (get, list) - Authenticated user can read their own question documents.
+     * @allow (update, delete) - Authenticated user can update or delete their own question documents.
+     * @deny (create) - Prevents creating a question document under a different user ID.
+     * @deny (get, list) - Prevents reading question documents from other users.
+     * @deny (update, delete) - Prevents modifying or deleting question documents from other users.
+     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
+     */
+    match /users/{userId}/questions/{questionId} {
+      allow create: if isSignedIn() && isOwner(userId);
+      allow get, list: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isExistingOwner(userId);
+      allow delete: if isSignedIn() && isExistingOwner(userId);
+    }
+
+    /**
+     * @description Enforces user-ownership for answer documents.
+     * @path /users/{userId}/answers/{answerId}
+     * @allow (create) - Authenticated user can create an answer document under their own user ID.
+     * @allow (get, list) - Authenticated user can read their own answer documents.
+     * @allow (update, delete) - Authenticated user can update or delete their own answer documents.
+     * @deny (create) - Prevents creating an answer document under a different user ID.
+     * @deny (get, list) - Prevents reading answer documents from other users.
+     * @deny (update, delete) - Prevents modifying or deleting answer documents from other users.
+     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
+     */
+    match /users/{userId}/answers/{answerId} {
+      allow create: if isSignedIn() && isOwner(userId);
+      allow get, list: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isExistingOwner(userId);
+      allow delete: if isSignedIn() && isExistingOwner(userId);
+    }
+
+    /**
+     * @description Enforces user-ownership for report documents.
+     * @path /users/{userId}/reports/{reportId}
+     * @allow (create) - Authenticated user can create a report document under their own user ID.
+     * @allow (get, list) - Authenticated user can read their own report documents.
+     * @allow (update, delete) - Authenticated user can update or delete their own report documents.
+     * @deny (create) - Prevents creating a report document under a different user ID.
+     * @deny (get, list) - Prevents reading report documents from other users.
+     * @deny (update, delete) - Prevents modifying or deleting report documents from other users.
+     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
+     */
+    match /users/{userId}/reports/{reportId} {
+      allow create: if isSignedIn() && isOwner(userId);
+      allow get, list: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isExistingOwner(userId);
+      allow delete: if isSignedIn() && isExistingOwner(userId);
+    }
+  }
+
+  // Helper functions
+  function isSignedIn() {
+    return request.auth != null;
+  }
+
+  function isOwner(userId) {
+    return request.auth.uid == userId;
+  }
+
+  function isExistingOwner(userId) {
+    return isSignedIn() && isOwner(userId) && resource != null;
+  }
+}

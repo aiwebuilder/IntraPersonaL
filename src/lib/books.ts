@@ -1,0 +1,35 @@
+export const books = [
+    // Indian Books
+    "I Am Malala",
+    "The Blue Umbrella by Ruskin Bond",
+    "Swami and Friends by R.K. Narayan",
+    "Wings of Fire by APJ Abdul Kalam",
+    "The Adventures of Rusty by Ruskin Bond",
+    "Malgudi Days by R.K. Narayan",
+    "The Room on the Roof by Ruskin Bond",
+    "Train to Pakistan by Khushwant Singh",
+    "The Palace of Illusions by Chitra Banerjee Divakaruni",
+    "The Namesake by Jhumpa Lahiri",
+    
+    // International Bestsellers for Youth
+    "To Kill a Mockingbird",
+    "The Great Gatsby",
+    "The Catcher in the Rye",
+    "The Lord of the Rings",
+    "Brave New World",
+    "The Hobbit",
+    "Fahrenheit 451",
+    "Frankenstein",
+    "The Alchemist",
+    "The Kite Runner",
+    "The Book Thief",
+    "Sapiens: A Brief History of Humankind",
+    "Educated",
+    "The Diary of a Young Girl",
+    "A Brief History of Time",
+    "Thinking, Fast and Slow",
+    "The 7 Habits of Highly Effective People",
+    "How to Win Friends and Influence People",
+    "The Power of Habit",
+    "Man's Search for Meaning"
+];
