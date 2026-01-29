@@ -1,7 +1,6 @@
-
 'use server';
 /**
- * @fileOverview Analyzes speech responses to generated questions and creates a detailed personality report.
+ * @fileOverview Analyzes speech responses to generated questions and creates a detailed IntraPersonaL report.
  *
  * - analyzeSpeechAndGenerateReport - A function that analyzes user speech and generates a personality report.
  */
@@ -17,8 +16,8 @@ const AnalyzeSpeechAndGenerateReportInputSchema = z.object({
 export type AnalyzeSpeechAndGenerateReportInput = z.infer<typeof AnalyzeSpeechAndGenerateReportInputSchema>;
 
 const AnalyzeSpeechAndGenerateReportOutputSchema = z.object({
-  report: z.string(),
-  chartsData: z.string(),
+  report: z.string().describe('A detailed IntraPersonaL personality report with strengths and weaknesses based on competency, understanding, logical reasoning, and critical thinking.'),
+  chartsData: z.string().describe('The data to be used to generate charts for the report. This must be a raw JSON string of an array of chart objects, without any markdown formatting.'),
 });
 export type AnalyzeSpeechAndGenerateReportOutput = z.infer<typeof AnalyzeSpeechAndGenerateReportOutputSchema>;
 
@@ -32,7 +31,7 @@ const prompt = ai.definePrompt({
   input: {schema: AnalyzeSpeechAndGenerateReportInputSchema},
   output: {schema: AnalyzeSpeechAndGenerateReportOutputSchema},
   model: 'googleai/gemini-2.5-flash',
-  prompt: `You are an AI assistant designed to analyze user speech responses to questions based on a given topic and generate a detailed personality report.
+  prompt: `You are "IntraPersonaL", an AI assistant designed to analyze user speech responses to questions based on a given topic and generate a detailed personality report.
 
   Topic: {{{topic}}}
   
@@ -42,37 +41,58 @@ const prompt = ai.definePrompt({
     Answer: {{{lookup ../speechResponses @index}}}
   {{/each}}
 
-  Analyze the speech responses, identify strengths and weaknesses, and generate a report with insights about the user's personality.
-  The report should be comprehensive and provide actionable feedback.
+  Analyze the user's responses on the following parameters:
+  1.  **Competency**: How well did the user demonstrate specific skills and knowledge related to the topic?
+  2.  **Understanding**: How well did the user grasp the core concepts of the questions?
+  3.  **Logical and Reasoning**: Did the user build arguments logically and sequentially?
+  4.  **Critical Thinking**: How well did the user evaluate the information and form independent judgments?
+
+  Generate a detailed IntraPersonaL personality report highlighting strengths and weaknesses across these parameters. Provide actionable feedback.
   
-  Also, create data for charts to visualize the user's personality traits. The charts data must be a raw JSON string of an array of objects. Each object should represent a chart and have 'type' ('bar' or 'pie'), 'title', 'data', and 'config' properties.
+  Also, create data for a variety of charts to visualize the user's personality traits and skills. You should generate data for multiple types of visualizations, such as **Bar Charts, Pie Charts, Line Graphs, or Radar Charts**.
+
+  The charts data must be a raw JSON string of an array of objects. Each object should represent a chart and have:
+  - 'type': one of 'bar', 'pie', 'line', 'radar', or 'area'.
+  - 'title': A string title for the chart.
+  - 'data': An array of objects containing the data points.
+  - 'config': A configuration object for colors and labels (optional/adaptive based on chart type).
   
   IMPORTANT: The 'chartsData' field in your output must be a valid JSON string ONLY. Do not include any markdown formatting like \`\`\`json or any other text outside of the JSON array.
-  
-  For bar charts, the 'data' should be an array of objects with 'name' and 'score' properties. The 'config' should define the 'score' with a label and a color.
-  For pie charts, the 'data' should be an array of objects with 'name', 'value', and 'fill' properties.
   
   Example for chartsData:
   [
     {
+      "type": "radar",
+      "title": "Cognitive Analysis",
+      "data": [
+        { "subject": "Competency", "A": 85, "fullMark": 100 },
+        { "subject": "Understanding", "A": 70, "fullMark": 100 },
+        { "subject": "Logic", "A": 90, "fullMark": 100 },
+        { "subject": "Critical Thinking", "A": 75, "fullMark": 100 }
+      ],
+      "config": {
+        "A": { "label": "User Score", "color": "hsl(var(--chart-1))" }
+      }
+    },
+    {
       "type": "bar",
-      "title": "Communication Skills",
+      "title": "Key Strengths",
       "data": [
         { "name": "Clarity", "score": 85 },
         { "name": "Conciseness", "score": 70 },
         { "name": "Confidence", "score": 90 }
       ],
       "config": {
-        "score": { "label": "Score", "color": "hsl(var(--chart-1))" }
+        "score": { "label": "Score", "color": "hsl(var(--chart-2))" }
       }
     },
     {
       "type": "pie",
-      "title": "Personality Traits",
+      "title": "Skill Distribution",
       "data": [
-        { "name": "Openness", "value": 30, "fill": "hsl(var(--chart-1))" },
-        { "name": "Conscientiousness", "value": 25, "fill": "hsl(var(--chart-2))" },
-        { "name": "Extraversion", "value": 20, "fill": "hsl(var(--chart-3))" }
+        { "name": "Logical", "value": 40, "fill": "hsl(var(--chart-3))" },
+        { "name": "Creative", "value": 30, "fill": "hsl(var(--chart-4))" },
+        { "name": "Analytical", "value": 30, "fill": "hsl(var(--chart-5))" }
       ]
     }
   ]
@@ -82,6 +102,14 @@ const prompt = ai.definePrompt({
 const analyzeSpeechAndGenerateReportFlow = ai.defineFlow(
   {
     name: 'analyzeSpeechAndGenerateReportFlow',
+    inputSchema: AnalyzeSpeechAndGenerateReportInputSchema,
+    outputSchema: AnalyzeSpeechAndGenerateReportOutputSchema,
+  },
+  async input => {
+    const {output} = await prompt(input);
+    return output!;
+  }
+);    name: 'analyzeSpeechAndGenerateReportFlow',
     inputSchema: AnalyzeSpeechAndGenerateReportInputSchema,
     outputSchema: AnalyzeSpeechAndGenerateReportOutputSchema,
   },
