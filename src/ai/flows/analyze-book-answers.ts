@@ -1,7 +1,6 @@
-
 'use server';
 /**
- * @fileOverview Analyzes user answers to book-related questions and generates a personality report.
+ * @fileOverview Analyzes user answers to book-related questions and generates an IntraPersonaL report.
  */
 
 import {ai} from '@/ai/genkit';
@@ -18,7 +17,7 @@ const AnalyzeBookAnswersInputSchema = z.object({
 export type AnalyzeBookAnswersInput = z.infer<typeof AnalyzeBookAnswersInputSchema>;
 
 const AnalyzeBookAnswersOutputSchema = z.object({
-    report: z.string().describe('A detailed personality report with strengths and weaknesses based on reading comprehension, critical thinking, and communication skills.'),
+    report: z.string().describe('A detailed IntraPersonaL personality report with strengths and weaknesses based on reading comprehension, critical thinking, and communication skills.'),
     chartsData: z.string().describe('The data to be used to generate charts for the report. This must be a raw JSON string of an array of chart objects, without any markdown formatting.'),
 });
 export type AnalyzeBookAnswersOutput = z.infer<typeof AnalyzeBookAnswersOutputSchema>;
@@ -32,7 +31,7 @@ const prompt = ai.definePrompt({
   input: {schema: AnalyzeBookAnswersInputSchema},
   output: {schema: AnalyzeBookAnswersOutputSchema},
   model: 'googleai/gemini-2.5-flash',
-  prompt: `You are an AI assistant designed to analyze a user's reading comprehension, critical thinking, and communication skills based on their answers to questions about a book summary.
+  prompt: `You are "IntraPersonaL", an AI assistant designed to analyze a user's reading comprehension, critical thinking, and communication skills based on their answers to questions about a book summary.
 
   Book Title: {{{bookTitle}}}
   Book Summary: {{{bookSummary}}}
@@ -54,14 +53,32 @@ const prompt = ai.definePrompt({
   2.  **Critical Thinking**: How well did the user analyze the themes and concepts of the book? (Assessed from follow-up answers).
   3.  **Clarity of Expression**: How clear and articulate were the user's spoken responses? (Assessed from follow-up answers).
 
-  Generate a detailed personality report highlighting strengths and weaknesses across these parameters. Provide actionable feedback.
+  Generate a detailed IntraPersonaL personality report highlighting strengths and weaknesses across these parameters. Provide actionable feedback.
 
-  Also, create data for charts to visualize the user's skills. The charts data must be a raw JSON string of an array of objects. Each object should represent a chart and have 'type' ('bar' or 'pie'), 'title', 'data', and 'config' properties.
+  Also, create data for a variety of charts to visualize the user's skills. You should generate data for multiple types of visualizations, such as **Bar Charts, Pie Charts, Line Graphs, or Radar Charts**.
+
+  The charts data must be a raw JSON string of an array of objects. Each object should represent a chart and have:
+  - 'type': one of 'bar', 'pie', 'line', 'radar', or 'area'.
+  - 'title': A string title for the chart.
+  - 'data': An array of objects containing the data points.
+  - 'config': A configuration object for colors and labels.
   
   IMPORTANT: The 'chartsData' field in your output must be a valid JSON string ONLY. Do not include any markdown formatting like \`\`\`json or any other text outside of the JSON array.
   
   Example for chartsData:
   [
+    {
+      "type": "radar",
+      "title": "Skill Analysis",
+      "data": [
+        { "subject": "Comprehension", "A": 85, "fullMark": 100 },
+        { "subject": "Critical Thinking", "A": 70, "fullMark": 100 },
+        { "subject": "Expression", "A": 90, "fullMark": 100 }
+      ],
+      "config": {
+        "A": { "label": "User Score", "color": "hsl(var(--chart-1))" }
+      }
+    },
     {
       "type": "bar",
       "title": "Overall Performance",
@@ -71,7 +88,7 @@ const prompt = ai.definePrompt({
         { "name": "Expression", "score": 90 }
       ],
       "config": {
-        "score": { "label": "Score", "color": "hsl(var(--chart-1))" }
+        "score": { "label": "Score", "color": "hsl(var(--chart-2))" }
       }
     }
   ]
