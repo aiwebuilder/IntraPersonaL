@@ -33,7 +33,7 @@ const sendReportEmailFlow = ai.defineFlow(
       // Basic but clean HTML email template
       const htmlBody = `
         <div style="font-family: sans-serif; max-width: 600px; margin: auto; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 2rem;">
-          <h1 style="color: #6366F1; text-align: center; font-size: 2.25rem;">AURA+ Report</h1>
+          <h1 style="color: #6366F1; text-align: center; font-size: 2.25rem;">IntraPersonaL Report</h1>
           <h2 style="color: #374151; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem;">Analysis for "${title}"</h2>
           
           <div style="background-color: #f8fafc; padding: 1.5rem; border-radius: 0.5rem; text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
@@ -44,13 +44,13 @@ const sendReportEmailFlow = ai.defineFlow(
 
           <h3 style="color: #4b5563;">Detailed Insights:</h3>
           <div style="white-space: pre-wrap; background-color: #f8fafc; padding: 1rem; border-radius: 0.5rem; line-height: 1.6;">${report}</div>
-          <p style="text-align: center; color: #9ca3af; font-size: 0.875rem; margin-top: 2rem;">Thank you for using AURA+.</p>
+          <p style="text-align: center; color: #9ca3af; font-size: 0.875rem; margin-top: 2rem;">Thank you for using IntraPersonaL.</p>
         </div>
       `;
 
       await sendEmail({
         to: email,
-        subject: `Your Aura+ report for "${title}"`,
+        subject: `Your IntraPersonaL report for "${title}"`,
         html: htmlBody,
       });
 
