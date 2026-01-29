@@ -36,7 +36,7 @@ const prompt = ai.definePrompt({
   Topic: {{{topic}}}
   Initial Speech Analysis: {{{speechAnalysis}}}
 
-  Generate three questions that encourage the user to elaborate further on the topic, taking into account their initial responses. The questions should be clear, concise, and relevant to both the topic and the user's initial input.
+  Generate three questions that encourage the user to elaborate further on the topic, taking into account their initial responses. The questions should be clear, concise, and relevant to both the topic and the user's initial input., the questions must test critical thinking, reasoning,understanding,logics, tough moderate to high level
 
   Output the three questions as a JSON array of strings.
   Ensure that questions are open ended, so that maximum relevant information is collected from the user's answers.
