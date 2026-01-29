@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -25,14 +24,14 @@ const bookSummaryPrompt = ai.definePrompt({
   name: 'bookSummaryPrompt',
   input: { schema: GetBookSummaryInputSchema },
   output: { schema: GetBookSummaryOutputSchema },
-  model: 'googleai/gemini-2.5-flash',
+  model: 'googleai/gemini-2.5-flash', // This model name is valid
   prompt: `
 You are a professional book summarizer.
 Summarize the book "{{{title}}}" in 120–140 words.
 Focus on key plot elements, main characters, and central themes.
 Avoid spoilers and ensure it reads naturally, engagingly, and concisely.
-Return only the summary text.
 `,
+// REMOVED: "Return only the summary text." - This was causing the JSON parse error.
   config: {
     safetySettings: [
         {
@@ -64,11 +63,13 @@ const getBookSummaryFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await bookSummaryPrompt(input);
-    return output!;
+    if (!output) {
+        throw new Error("Failed to generate summary: Output was null.");
+    }
+    return output;
   }
 );
 
-// Exported function for external use
 export async function getBookSummary(input: GetBookSummaryInput): Promise<GetBookSummaryOutput> {
   return getBookSummaryFlow(input);
 }
