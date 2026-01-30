@@ -1,81 +1,86 @@
 'use server';
+
 /**
- * @fileOverview Analyzes user answers to book-related questions and generates a personality report.
+ * @fileOverview Analyzes user speech on a specific topic and generates a personality report.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'zod';
+import { ai } from '@/ai/genkit';
+import { z } from 'zod';
 
-const AnalyzeBookAnswersInputSchema = z.object({
-  bookTitle: z.string(),
-  bookSummary: z.string(),
-  rapidFireQuestions: z.array(z.string()),
-  rapidFireAnswers: z.array(z.string()),
-  followUpQuestions: z.array(z.string()),
-  followUpAnswers: z.array(z.string()),
-});
-export type AnalyzeBookAnswersInput = z.infer<typeof AnalyzeBookAnswersInputSchema>;
-
-// Define the chart structure explicitly so the model doesn't have to stringify it
-const ChartDataSchema = z.object({
-    type: z.enum(['bar', 'pie']),
-    title: z.string(),
-    data: z.array(z.object({
-        name: z.string(),
-        score: z.number(),
-        fill: z.string().optional(), // optional color override
-    })),
-    config: z.record(z.any()).optional(),
+// Define the input schema matching what the frontend sends
+const AnalyzeSpeechAndGenerateReportInputSchema = z.object({
+  topic: z.string(),
+  questions: z.array(z.string()),
+  speechResponses: z.array(z.string()),
 });
 
-const AnalyzeBookAnswersOutputSchema = z.object({
-    report: z.string().describe('A detailed personality report with strengths and weaknesses...'),
-    // Change from z.string() to z.array(...)
-    chartsData: z.array(ChartDataSchema).describe('Array of chart objects for visualization.'),
-});
-export type AnalyzeBookAnswersOutput = z.infer<typeof AnalyzeBookAnswersOutputSchema>;
+export type AnalyzeSpeechAndGenerateReportInput = z.infer<typeof AnalyzeSpeechAndGenerateReportInputSchema>;
 
-export async function analyzeBookAnswers(input: AnalyzeBookAnswersInput): Promise<AnalyzeBookAnswersOutput> {
-  return analyzeBookAnswersFlow(input);
+// Define the output schema matching what the frontend expects
+const AnalyzeSpeechAndGenerateReportOutputSchema = z.object({
+  report: z.string().describe('A detailed personality report with strengths and weaknesses based on the speech analysis.'),
+  chartsData: z.string().describe('The data to be used to generate charts for the report. This must be a raw JSON string of an array of chart objects, without any markdown formatting.'),
+});
+
+export type AnalyzeSpeechAndGenerateReportOutput = z.infer<typeof AnalyzeSpeechAndGenerateReportOutputSchema>;
+
+// The main exported function called by the frontend
+export async function analyzeSpeechAndGenerateReport(input: AnalyzeSpeechAndGenerateReportInput): Promise<AnalyzeSpeechAndGenerateReportOutput> {
+  return analyzeSpeechAndGenerateReportFlow(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'analyzeBookAnswersPrompt',
-  input: {schema: AnalyzeBookAnswersInputSchema},
-  output: {schema: AnalyzeBookAnswersOutputSchema},
+  name: 'analyzeSpeechAndGenerateReportPrompt',
+  input: { schema: AnalyzeSpeechAndGenerateReportInputSchema },
+  output: { schema: AnalyzeSpeechAndGenerateReportOutputSchema },
   model: 'googleai/gemini-2.5-flash',
-  prompt: `You are an AI assistant designed to analyze a user's reading comprehension...
+  prompt: `You are an AI assistant designed to analyze a user's communication skills and personality traits based on their spoken responses to questions about a specific topic.
 
-  [... keep your existing inputs here ...]
+  Topic: {{{topic}}}
 
-  Analyze the user's answers on the following parameters:
-  1. Reading Comprehension
-  2. Critical Thinking
-  3. Clarity of Expression
+  Questions and Spoken Responses:
+  {{#each questions}}
+  - Question: {{{this}}}
+    Response: {{{lookup ../speechResponses @index}}}
+  {{/each}}
 
-  Generate a detailed personality report highlighting strengths and weaknesses.
+  Analyze the user's responses on the following parameters:
+  1. **Clarity of Thought**: How well structured and logical were the answers?
+  2. **Communication Style**: Was the tone confident, hesitant, formal, or casual?
+  3. **Depth of Insight**: Did the user demonstrate a deep understanding of the topic?
 
-  Also, populate the 'chartsData' array with objects representing the user's skills.
-  Example structure for a chart:
-  {
+  Generate a detailed personality report highlighting strengths and areas for improvement. Provide actionable feedback on how they can improve their public speaking or thought articulation.
+
+  Also, create data for charts to visualize the user's skills. The charts data must be a raw JSON string of an array of objects. Each object should represent a chart and have 'type' ('bar' or 'pie'), 'title', 'data', and 'config' properties.
+
+  IMPORTANT: The 'chartsData' field in your output must be a valid JSON string ONLY. Do not include any markdown formatting like \`\`\`json or any other text outside of the JSON array.
+
+  Example for chartsData:
+  [
+    {
       "type": "bar",
-      "title": "Overall Performance",
+      "title": "Communication Analysis",
       "data": [
-        { "name": "Comprehension", "score": 85 },
-        { "name": "Critical Thinking", "score": 70 }
-      ]
-  }
+        { "name": "Clarity", "score": 85 },
+        { "name": "Confidence", "score": 75 },
+        { "name": "Depth", "score": 80 }
+      ],
+      "config": {
+        "score": { "label": "Score", "color": "hsl(var(--chart-1))" }
+      }
+    }
+  ]
   `,
 });
 
-const analyzeBookAnswersFlow = ai.defineFlow(
+const analyzeSpeechAndGenerateReportFlow = ai.defineFlow(
   {
-    name: 'analyzeBookAnswersFlow',
-    inputSchema: AnalyzeBookAnswersInputSchema,
-    outputSchema: AnalyzeBookAnswersOutputSchema,
+    name: 'analyzeSpeechAndGenerateReportFlow',
+    inputSchema: AnalyzeSpeechAndGenerateReportInputSchema,
+    outputSchema: AnalyzeSpeechAndGenerateReportOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
+  async (input) => {
+    const { output } = await prompt(input);
     return output!;
   }
 );
