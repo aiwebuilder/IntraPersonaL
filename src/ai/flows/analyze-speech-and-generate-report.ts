@@ -7,7 +7,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
-// Define the input schema matching what the frontend sends
+// Input schema matching what the frontend sends
 const AnalyzeSpeechAndGenerateReportInputSchema = z.object({
   topic: z.string(),
   questions: z.array(z.string()),
@@ -16,7 +16,7 @@ const AnalyzeSpeechAndGenerateReportInputSchema = z.object({
 
 export type AnalyzeSpeechAndGenerateReportInput = z.infer<typeof AnalyzeSpeechAndGenerateReportInputSchema>;
 
-// Define the output schema matching what the frontend expects
+// Output schema matching what the frontend expects
 const AnalyzeSpeechAndGenerateReportOutputSchema = z.object({
   report: z.string().describe('A detailed personality report with strengths and weaknesses based on the speech analysis.'),
   chartsData: z.string().describe('The data to be used to generate charts for the report. This must be a raw JSON string of an array of chart objects, without any markdown formatting.'),
@@ -33,7 +33,7 @@ const prompt = ai.definePrompt({
   name: 'analyzeSpeechAndGenerateReportPrompt',
   input: { schema: AnalyzeSpeechAndGenerateReportInputSchema },
   output: { schema: AnalyzeSpeechAndGenerateReportOutputSchema },
-  model: 'googleai/gemini-2.5-flash',
+  model: 'googleai/gemini-1.5-flash', // Use a stable model version
   prompt: `You are an AI assistant designed to analyze a user's communication skills and personality traits based on their spoken responses to questions about a specific topic.
 
   Topic: {{{topic}}}
@@ -49,7 +49,7 @@ const prompt = ai.definePrompt({
   2. **Communication Style**: Was the tone confident, hesitant, formal, or casual?
   3. **Depth of Insight**: Did the user demonstrate a deep understanding of the topic?
 
-  Generate a detailed personality report highlighting strengths and areas for improvement. Provide actionable feedback on how they can improve their public speaking or thought articulation.
+  Generate a detailed personality report highlighting strengths and areas for improvement. Provide actionable feedback.
 
   Also, create data for charts to visualize the user's skills. The charts data must be a raw JSON string of an array of objects. Each object should represent a chart and have 'type' ('bar' or 'pie'), 'title', 'data', and 'config' properties.
 
