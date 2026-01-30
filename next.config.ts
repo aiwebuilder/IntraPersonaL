@@ -1,41 +1,25 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
   typescript: {
-    ignoreBuildErrors: true, //
+    ignoreBuildErrors: true,
   },
   eslint: {
-    ignoreDuringBuilds: true, //
+    ignoreDuringBuilds: true,
   },
   images: {
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'placehold.co', //
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com', //
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'picsum.photos', //
-        port: '',
-        pathname: '/**',
-      },
+      { protocol: 'https', hostname: 'placehold.co', port: '', pathname: '/**' },
+      { protocol: 'https', hostname: 'images.unsplash.com', port: '', pathname: '/**' },
+      { protocol: 'https', hostname: 'picsum.photos', port: '', pathname: '/**' },
     ],
   },
-  // Add this function for redirection/rewrites
+  // UPDATE THIS PART
   async rewrites() {
     return [
       {
-        source: '/ads.txt',
-        destination: '/ads.txt', // Points to public/ads.txt
+        source: '/ads.txt',       // The URL the user visits
+        destination: '/google-ads', // The internal route we created in Step 1
       },
     ];
   },
