@@ -44,13 +44,8 @@ export default function RootLayout({
         roboto.variable
       )}>
         {/* Google AdSense Script */}
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6675484914269982"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
-
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6675484914269982"
+     crossorigin="anonymous"></script>
         {/* Background Visuals */}
         <ThreeBackground />
 
