@@ -7,6 +7,28 @@ import { cn } from "@/lib/utils";
 import { FirebaseErrorListener } from "@/components/FirebaseErrorListener";
 import ThreeBackground from "@/components/ui/three-background";
 import Script from "next/script";
+// pages/_document.js
+import { Html, Head, Main, NextScript } from 'next/document'
+import Script from 'next/script'
+
+export default function Document() {
+  return (
+    <Html>
+      <Head>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6675484914269982"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      </Head>
+      <body>
+        <Main />
+        <NextScript />
+      </body>
+    </Html>
+  )
+}
 
 const orbitron = Orbitron({ subsets: ["latin"], variable: "--font-headline" });
 const roboto = Roboto({ subsets: ["latin"], weight: "400", variable: "--font-body" });
