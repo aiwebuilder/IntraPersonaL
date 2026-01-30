@@ -43,9 +43,14 @@ export default function RootLayout({
         orbitron.variable, 
         roboto.variable
       )}>
-        {/* Google AdSense Script */}
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6675484914269982"
-     crossorigin="anonymous"></script>
+        {/* Google AdSense Script - Optimized for Next.js */}
+        <Script 
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6675484914269982"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+
         {/* Background Visuals */}
         <ThreeBackground />
 
