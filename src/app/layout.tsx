@@ -15,7 +15,8 @@ export const metadata: Metadata = {
   title: "IntraPersonaL",
   description: "Unlock your potential with AI-powered personality analysis.",
   other: {
-    "google-adsense-account": "ca-pub-6675484914269982",
+    // This generates the <meta name="google-adsense-account" ... > tag
+    "google-adsense-account": "ca-pub-6675484914269982", 
   },
 };
 
