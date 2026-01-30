@@ -6,7 +6,7 @@ import { Orbitron, Roboto } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { FirebaseErrorListener } from "@/components/FirebaseErrorListener";
 import ThreeBackground from "@/components/ui/three-background";
-import Script from "next/script"; // 1. Import the Script component
+import Script from "next/script";
 
 const orbitron = Orbitron({ subsets: ["latin"], variable: "--font-headline" });
 const roboto = Roboto({ subsets: ["latin"], weight: "400", variable: "--font-body" });
@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn("font-body antialiased text-slate-300 selection:bg-primary selection:text-white", orbitron.variable, roboto.variable)}>
-        {/* 2. Add the AdSense Script here */}
+        {/* Google AdSense Script */}
         <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6675484914269982"
