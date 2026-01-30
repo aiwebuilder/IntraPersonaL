@@ -14,6 +14,9 @@ const roboto = Roboto({ subsets: ["latin"], weight: "400", variable: "--font-bod
 export const metadata: Metadata = {
   title: "IntraPersonaL",
   description: "Unlock your potential with AI-powered personality analysis.",
+  other: {
+    "google-adsense-account": "ca-pub-6675484914269982",
+  },
 };
 
 export default function RootLayout({
