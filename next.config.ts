@@ -1,34 +1,43 @@
-import type {NextConfig} from 'next';
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: true, //
   },
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: true, //
   },
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'placehold.co',
+        hostname: 'placehold.co', //
         port: '',
         pathname: '/**',
       },
       {
         protocol: 'https',
-        hostname: 'images.unsplash.com',
+        hostname: 'images.unsplash.com', //
         port: '',
         pathname: '/**',
       },
       {
         protocol: 'https',
-        hostname: 'picsum.photos',
+        hostname: 'picsum.photos', //
         port: '',
         pathname: '/**',
       },
     ],
+  },
+  // Add this function for redirection/rewrites
+  async rewrites() {
+    return [
+      {
+        source: '/ads.txt',
+        destination: '/ads.txt', // Points to public/ads.txt
+      },
+    ];
   },
 };
 
